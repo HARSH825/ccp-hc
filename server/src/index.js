@@ -9,7 +9,7 @@ dotenv.config();
 const app = express();
 
 const PORT = process.env.PORT || 3000;
-const CLIENT_URL = "https://ccp.harshdev.cloud";
+const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
 
 app.use(
   cors({
@@ -26,6 +26,17 @@ app.use((req, res, next) => {
 });
 
 app.use("/api", statementRoutes);
+
+app.get("/", (req, res) => {
+  res.json({
+    message: "Credit Card Statement Parser API",
+    version: "1.0.0",
+    endpoints: {
+      health: "GET /api/health",
+      parseStatement: "POST /api/parse-statement",
+    },
+  });
+});
 
 app.use((req, res) => {
   res.status(404).json({
@@ -57,16 +68,17 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Start server
 app.listen(PORT, () => {
 
   console.log(`Server running on: http://localhost:${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
-
+  // Start keep-alive service for Render (only in production)
   if (process.env.NODE_ENV === "production" && process.env.RENDER_URL) {
     startKeepAlive();
   }
 });
 
+// Handle graceful shutdown
 process.on("SIGTERM", () => {
   console.log("SIGTERM signal received: closing HTTP server");
   process.exit(0);
