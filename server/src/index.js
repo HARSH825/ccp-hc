@@ -1,4 +1,3 @@
-
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -9,11 +8,16 @@ dotenv.config();
 const app = express();
 
 const PORT = process.env.PORT || 3000;
-const CLIENT_URL = "https://ccp.harshdev.cloud";
+const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
 
 app.use(
   cors({
-    origin: CLIENT_URL,
+    origin: [
+      CLIENT_URL,
+      "http://localhost:5173",
+      "https://ccp.harshdev.cloud",
+      "https://ccp-hc-1.onrender.com",
+    ],
     credentials: true,
   })
 );
@@ -45,6 +49,7 @@ app.use((req, res) => {
   });
 });
 
+// Error handler
 app.use((err, req, res, next) => {
   console.error("Unhandled error:", err);
 
@@ -69,13 +74,15 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-
   console.log(`Server running on: http://localhost:${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+
   if (process.env.NODE_ENV === "production" && process.env.RENDER_URL) {
     startKeepAlive();
   }
 });
 
+// Handle graceful shutdown
 process.on("SIGTERM", () => {
   console.log("SIGTERM signal received: closing HTTP server");
   process.exit(0);

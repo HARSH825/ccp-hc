@@ -1,7 +1,7 @@
 {
   "name": "ccp",
   "version": "1.0.0",
-  "description": "",
+  "description": "Credit Card Statement Parser",
   "main": "src/index.js",
   "type": "module",
   "scripts": {

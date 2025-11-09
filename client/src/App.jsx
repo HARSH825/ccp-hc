@@ -58,7 +58,7 @@ function App() {
       formData.append("file", file);
       formData.append("bank", bank);
 
-      const response = await fetch(`${API_URL}/parse-statement`, {
+      const response = await fetch(`${API_URL}/api/parse-statement`, {
         method: "POST",
         body: formData,
       });

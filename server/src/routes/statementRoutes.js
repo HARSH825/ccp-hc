@@ -1,4 +1,3 @@
-
 import express from "express";
 import fs from "fs";
 import pdfParse from "pdf-parse";
@@ -11,25 +10,40 @@ import {
 
 const router = express.Router();
 
+router.get("/health", (req, res) => {
+  res.json({
+    success: true,
+    message: "API is running",
+    timestamp: new Date().toISOString(),
+  });
+});
+
 router.post("/parse-statement", upload.single("file"), async (req, res) => {
   let filePath = null;
 
   try {
+    console.log("Received parse-statement request");
+
     if (!req.file) {
+      console.log("No file in request");
       return res.status(400).json({
         success: false,
         error: "No file uploaded. Please upload a PDF file.",
       });
     }
 
+    console.log(`File received: ${req.file.originalname}`);
     filePath = req.file.path;
 
     const dataBuffer = fs.readFileSync(filePath);
+    console.log("PDF file read successfully");
 
     const pdfData = await pdfParse(dataBuffer);
     const extractedText = pdfData.text;
+    console.log(`Extracted ${extractedText.length} characters from PDF`);
 
     const detectedBank = detectBank(extractedText);
+    console.log(`Detected bank: ${detectedBank || 'None'}`);
 
     if (!detectedBank) {
       return res.status(400).json({
@@ -46,8 +60,10 @@ router.post("/parse-statement", upload.single("file"), async (req, res) => {
     }
 
     const parser = getParser(detectedBank);
+    console.log(`Using parser for ${detectedBank}`);
 
     const parsedData = parser(extractedText);
+    console.log("Parsing successful");
 
     if (!parsedData || Object.keys(parsedData).length === 0) {
       throw new Error("Failed to extract data from the statement");
@@ -79,11 +95,12 @@ router.post("/parse-statement", upload.single("file"), async (req, res) => {
       fs.unlink(filePath, (err) => {
         if (err) {
           console.error("Error deleting file:", err);
+        } else {
+          console.log("Temporary file deleted");
         }
       });
     }
   }
 });
-
 
 export default router;
