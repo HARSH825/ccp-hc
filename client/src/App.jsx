@@ -12,42 +12,6 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const validateParsedData = (parsed) => {
-    if (!parsed || typeof parsed !== 'object') {
-      return { isValid: false, message: "Invalid response from server" };
-    }
-
-    const criticalFields = [
-      'provider',
-      'statement_date',
-      'card_last4',
-      'payment_due_date',
-      'total_dues',
-      'minimum_amount_due'
-    ];
-
-    for (const field of criticalFields) {
-      const value = parsed[field];
-
-      if (
-        value === null ||
-        value === undefined ||
-        value === '' ||
-        value === '0' ||
-        value === 0 ||
-        value === '0.00' ||
-        value === 'N/A'
-      ) {
-        return {
-          isValid: false,
-          message: "Bank not supported or unable to extract data. Please ensure your statement is from a supported bank (HDFC, ICICI, Axis, SBI, Kotak)."
-        };
-      }
-    }
-
-    return { isValid: true };
-  };
-
   const handleParse = async (file, bank) => {
     setLoading(true);
     setError(null);
@@ -66,14 +30,7 @@ function App() {
       const result = await response.json();
 
       if (result.success) {
-        // Validate the parsed data
-        const validation = validateParsedData(result.parsed);
-
-        if (!validation.isValid) {
-          setError(validation.message);
-          return;
-        }
-
+        // Directly use parsed data from server (no validation)
         setData(result.parsed);
         setShowResults(true);
         setTimeout(() => {
@@ -165,7 +122,7 @@ function App() {
       <footer className="footer footer-center p-10 text-base-content">
         <aside>
           <p className="text-sm opacity-70">
-            No external Dependecy . Your data is processed securely and never stored or passed .
+            No external Dependency. Your data is processed securely and never stored or passed.
           </p>
           <p className="text-xs opacity-60 mt-2">
             No external dependencies • No LLM • Complete privacy
