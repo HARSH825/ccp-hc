@@ -4,7 +4,7 @@ import UploadCard from "./components/UploadCard";
 import ResultTable from "./components/ResultTable";
 import { Zap, Shield, Building2, Lock, Gauge } from "lucide-react";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
+const API_URL = "https://ccp-hc-1.onrender.com";
 
 function App() {
   const [showResults, setShowResults] = useState(false);
