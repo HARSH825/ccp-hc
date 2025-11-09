@@ -9,7 +9,7 @@ dotenv.config();
 const app = express();
 
 const PORT = process.env.PORT || 3000;
-const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
+const CLIENT_URL = "https://ccp.harshdev.cloud";
 
 app.use(
   cors({
@@ -68,17 +68,14 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start server
 app.listen(PORT, () => {
 
   console.log(`Server running on: http://localhost:${PORT}`);
-  // Start keep-alive service for Render (only in production)
   if (process.env.NODE_ENV === "production" && process.env.RENDER_URL) {
     startKeepAlive();
   }
 });
 
-// Handle graceful shutdown
 process.on("SIGTERM", () => {
   console.log("SIGTERM signal received: closing HTTP server");
   process.exit(0);
