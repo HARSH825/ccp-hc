@@ -37,3 +37,7 @@ temp/
 
 # Operating System Files
 Thumbs.db
+
+# Uploads - ignore all files but keep the directory
+uploads/*
+!uploads/.gitkeep
